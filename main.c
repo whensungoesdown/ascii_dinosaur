@@ -246,17 +246,19 @@ void memcpy_int (int* dst, int* src, int cnt)
 	}
 }
 
-void show_img (int* video_base, int pos_x, int pos_y, char* pimg, int row, int col)
+//
+// pos_x   4 bytes aligned, do not exceed (COLUMN - image width)
+void show_img (int* video_base, int pos_row, int pos_col, char* pimg, int row, int col)
 {
 	int* pimg_int = (int*)pimg;
-
 	int col_int = col / sizeof(int);
+	int* video_base_with_offset = video_base + pos_row * (COLUMN / sizeof(int)) + pos_col/sizeof(int);
 
 	int i = 0;
 
 	for (i = 0; i < row; i++)
 	{
-		int* prow = video_base + (COLUMN / sizeof(int) * i);
+		int* prow = video_base_with_offset + (COLUMN / sizeof(int) * i);
 		int* pimgrow_int = pimg_int + (col_int * i);
 
 
@@ -281,22 +283,24 @@ void reflesh_screen (void)
 
 		printf("%s\n", onerow);
 	}
+	printf("\n");
 }
 
 int main (void)
 {
 
+	memset(g_buffer, 0x61, COLUMN * ROW);
 
 
 	//display_dinosaur((int*)g_buffer, 0, 0);
 	
-	show_img((int*)g_buffer, 0, 0, dinosaur_right, 19, 24);
+	show_img((int*)g_buffer, 2, 8, dinosaur_right, 19, 24);
 	reflesh_screen();	
 
-	show_img((int*)g_buffer, 0, 0, dinosaur_empty, 19, 24);
+	show_img((int*)g_buffer, 2, 8, dinosaur_empty, 19, 24);
 	reflesh_screen();	
 
-	show_img((int*)g_buffer, 0, 0, dinosaur_left, 19, 24);
+	show_img((int*)g_buffer, 2, 8, dinosaur_left, 19, 24);
 	reflesh_screen();	
 
 	return 0;
