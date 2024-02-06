@@ -162,24 +162,142 @@ void display_dinosaur (int* video_base, int x, int y)
 	video_base[COLUMN / sizeof(int) * 18 + 5] = '    ';
 }
 
-int main (void)
-{
-	char buffer[COLUMN * ROW] = {0};
 
-	char onerow[COLUMN + 1] = {0};
+// 19 x 24
+
+char dinosaur_left[] =
+
+"           XXXXXXXXXX   "
+"          XX XXXXXXXXX  "
+"          XXXXXXXXXXXX  "
+"          XXXXXXXXXXXX  "
+"          XXXXXXXXXXXX  "
+"          XXXXXX        "
+"X        XXXXXXXXXX     "
+"X       XXXXXX          "
+"XX     XXXXXXX          "
+"XXXX  XXXXXXXXXX        "
+"XXXXXXXXXXXXXX X        "
+" XXXXXXXXXXXXX          "
+"  XXXXXXXXXXXX          "
+"   XXXXXXXXXX           "
+"    XXXXXXXX            "
+"     XXX XX             "
+"     XX   XX            "
+"     X                  "
+"     XX                 "
+;
+
+
+char dinosaur_right[] =
+
+"           XXXXXXXXXX   "
+"          XX XXXXXXXXX  "
+"          XXXXXXXXXXXX  "
+"          XXXXXXXXXXXX  "
+"          XXXXXXXXXXXX  "
+"          XXXXXX        "
+"X        XXXXXXXXXX     "
+"X       XXXXXX          "
+"XX     XXXXXXX          "
+"XXXX  XXXXXXXXXX        "
+"XXXXXXXXXXXXXX X        "
+" XXXXXXXXXXXXX          "
+"  XXXXXXXXXXXX          "
+"   XXXXXXXXXX           "
+"    XXXXXXXX            "
+"     XX  XX             "
+"      XX  X             "
+"          X             "
+"          XX            "
+;
+
+
+char dinosaur_empty[] =
+
+"                        "
+"                        "
+"                        "
+"                        "
+"                        "
+"                        "
+"                        "
+"                        "
+"                        "
+"                        "
+"                        "
+"                        "
+"                        "
+"                        "
+"                        "
+"                        "
+"                        "
+"                        "
+"                        "
+;
+
+void memcpy_int (int* dst, int* src, int cnt)
+{
+	int i = 0;
+
+	for (i = 0; i < cnt; i++)
+	{
+		dst[i] = src[i];
+	}
+}
+
+void show_img (int* video_base, int pos_x, int pos_y, char* pimg, int row, int col)
+{
+	int* pimg_int = (int*)pimg;
+
+	int col_int = col / sizeof(int);
 
 	int i = 0;
 
-	display_dinosaur((int*)buffer, 0, 0);
+	for (i = 0; i < row; i++)
+	{
+		int* prow = video_base + (COLUMN / sizeof(int) * i);
+		int* pimgrow_int = pimg_int + (col_int * i);
+
+
+		memcpy_int(prow, pimgrow_int, col_int);
+	}
+}
+
 	
+char g_buffer[COLUMN * ROW] = {0};
+
+void reflesh_screen (void)
+{
+	
+	int i = 0;
+
+	char onerow[COLUMN + 1] = {0};
+
 	for (i = 0; i < ROW; i++)
 	{
 		memset(onerow, 0, COLUMN + 1);
-		memcpy(onerow, buffer + COLUMN * i, COLUMN);
+		memcpy(onerow, g_buffer + COLUMN * i, COLUMN);
 
 		printf("%s\n", onerow);
 	}
+}
 
+int main (void)
+{
+
+
+
+	//display_dinosaur((int*)g_buffer, 0, 0);
+	
+	show_img((int*)g_buffer, 0, 0, dinosaur_right, 19, 24);
+	reflesh_screen();	
+
+	show_img((int*)g_buffer, 0, 0, dinosaur_empty, 19, 24);
+	reflesh_screen();	
+
+	show_img((int*)g_buffer, 0, 0, dinosaur_left, 19, 24);
+	reflesh_screen();	
 
 	return 0;
 }
